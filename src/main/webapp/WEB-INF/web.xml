@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+    <!-- 同时还存在着这样一种配置节：context-param，它用于向 ServletContext 提供键值对，即应用程序上下文信息。
+    	我们的 listener, filter 等在初始化时会用到这些上下文中的信息，那么 context-param 配置节是不是应该写在 listener 配置节前呢？
+    	实际上 context-param 配置节可写在任意位置，因此真正的加载顺序为：context-param -> listener -> filter -> servlet -->
+
+
+
+    <!-- 启动spring监听器,同时参照配置文件初始化所需的实例 -->
+    <!--Spring 提供ServletContextListener 的一个实现类ContextLoaderListener ，
+    该类可以作为listener 使用，它会在创建时自动查找WEB-INF/ 下的applicationContext.xrnl 文件。
+    因此，如果只有一个配置文件，并且文件名为applicationContext.xml ，则只需在web.xml文件中增加如下代码即可:-->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <!-- 加载spring上下文的具体地址 -->
+    <!--如果有多个配置文件需要载入，则考虑使用<context-param>元素来确定配置文件的文件名。
+    由于ContextLoaderListener加载时，会查找名为contextConfigLocation的参数。
+    因此，配置<context-param>时参数名字应该是contextConfigLocation。-->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            classpath:conf/spring/*-context.xml
+        </param-value>
+    </context-param>
+
+
+
+
+
+    <!-- 监听当前线程绑定的request -->
+    <!-- <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener> -->
+
+    <!-- 声明spring mvc转向使用的顶级Servlet -->
+    <!-- 该DispatcherServlet默认使用WebApplicationContext作为上下文，Spring默认配置文件为“/WEB-INF/[servlet名字]-servlet.xml”。 -->
+    <servlet>
+        <servlet-name>springMVC</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <!-- <param-name>namespace</param-name>
+            <param-value>action-servlet</param-value> --><!-- 这种方式action-servlet.xml必须在WEB-INFO目录中 -->
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:conf/springmvc/action-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <!-- 声明 spring mvc 拦截.htm和.json的请求-->
+    <servlet-mapping>
+        <servlet-name>springMVC</servlet-name>
+        <url-pattern>*.htm</url-pattern>
+    </servlet-mapping>
+
+
+    <!-- 转换编码  -->
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>
+            org.springframework.web.filter.CharacterEncodingFilter
+        </filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+</web-app>

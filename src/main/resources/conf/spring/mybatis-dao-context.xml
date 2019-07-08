@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:jdbc="http://www.springframework.org/schema/jdbc"  
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:util="http://www.springframework.org/schema/util" xmlns:task="http://www.springframework.org/schema/task" xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd"
+	default-lazy-init="true">
+
+    <context:property-placeholder location="classpath:prop/mybatis-db.properties"/>
+
+    <!-- 数据源配置, 使用druid数据库连接池 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="driverClassName" value="${db.driver}" />
+        <property name="url" value="${db.url}" />
+        <property name="username" value="${db.username}" />
+        <property name="password" value="${db.password}" />
+        <!-- 配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="${db.pool.init}" />
+        <property name="minIdle" value="${db.pool.minIdle}" />
+        <property name="maxActive" value="${db.pool.maxActive}" />
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="60000" />
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+        <property name="validationQuery" value="${db.testSql}" />
+        <property name="testWhileIdle" value="true" />
+        <property name="testOnBorrow" value="false" />
+        <property name="testOnReturn" value="false" />
+        <!-- 打开PSCache，并且指定每个连接上PSCache的大小（Oracle使用）
+        <property name="poolPreparedStatements" value="true" />
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="20" /> -->
+        <!-- 配置监控统计拦截的filters -->
+        <property name="filters" value="stat" />
+
+        <property name="defaultAutoCommit" value="false"/>
+    </bean>
+
+
+ 	<!-- MyBatis sqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 配置数据库表对应的java实体类位置 -->
+        <property name="typeAliasesPackage" value="com.mpt.entity"/>
+        <!--某些时候，typeAliasesPackage设置的是个很大的范围，不是具体的entity所在的包，里面有许多entity之外的东西。如果配置了typeAliasesSuperType(例如XX.BaseEntity)，就只扫描所有继承了BaseEntity的类-->
+        <!--<property name="typeAliasesSuperType" value="com.chinawsoft.common.persistence.BaseEntity"/>-->
+        <!--mapper位置-->
+        <property name="mapperLocations" value="classpath:/mappers/**/*.xml"/>
+        <!--mybatis的其他配置文件-->
+		<property name="configLocation" value="classpath:conf/spring/mybatis-config.xml"></property>
+
+
+    </bean>
+    
+    <!-- 扫描basePackage下所有以@MyBatisDao注解的接口 -->
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+        <property name="basePackage" value="com.mpt.dao"/>
+        <!--表示的是自定义的注释，这个自定义注释就是用来注释dao的-->
+        <property name="annotationClass" value="com.mpt.dao.annotation.MyBatisDao"/>
+
+    </bean>
+
+    
+
+	
+</beans>
