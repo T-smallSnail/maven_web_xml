@@ -17,14 +17,16 @@ public class PersonServiceImpl implements PersonService{
     @Autowired
     PersonDao personDao;
 
-//    @Transactional(readOnly = true)
+    @Transactional(readOnly = false)
     @Override
     public void getPerson() {
 
-//        Person personById = personDao.findPersonById(1);
-//        System.out.println(personById.getAddress());
+        Person personById = personDao.findPersonById(1);
 
-        personDao.insertPerson();
+        personById.setAddress("信阳市");
+        System.out.println(personById.getAddress());
+
+//        personDao.insertPerson();
 
 //        personDao.savePerson();
 

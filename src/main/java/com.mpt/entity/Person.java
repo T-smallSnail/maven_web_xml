@@ -1,11 +1,16 @@
 package com.mpt.entity;
 
+import java.io.Serializable;
+
 /**
  * @author ：pancho
  * @date ：Created in 2019/7/3 17:00
  * @description :
  */
-public class Person {
+public class Person implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private Integer id;
     private String lastName;
     private String firstName;

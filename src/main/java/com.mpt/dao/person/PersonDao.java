@@ -4,11 +4,12 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import com.mpt.dao.annotation.MyBatisDao;
 import com.mpt.entity.Person;
+import com.mpt.entity.PersonExample;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 
 @MyBatisDao
-public interface PersonDao extends BaseMapper<Person> {
+public interface PersonDao extends MyBatisBaseDao<Person, Integer, PersonExample>  {
 
     public Person findPersonById(Integer id);
 
