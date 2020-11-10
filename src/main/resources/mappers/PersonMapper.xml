@@ -3,8 +3,8 @@
 <mapper namespace="com.mpt.dao.person.PersonDao">
     <resultMap id="BaseResultMap" type="com.mpt.entity.Person">
         <result column="Id" jdbcType="INTEGER" property="id" />
-        <result column="LastName" jdbcType="VARCHAR" property="lastname" />
-        <result column="FirstName" jdbcType="VARCHAR" property="firstname" />
+        <result column="LastName" jdbcType="VARCHAR" property="lastName" />
+        <result column="FirstName" jdbcType="VARCHAR" property="firstName" />
         <result column="Address" jdbcType="VARCHAR" property="address" />
         <result column="City" jdbcType="VARCHAR" property="city" />
     </resultMap>
